@@ -159,12 +159,15 @@ def get_all_makanan():
     all_makanan = Makanan.query.all()
     makanan_dict = {}
     for makanan in all_makanan:
-        makanan_dict[makanan.id_makanan] = [
-            makanan.nama_makanan , makanan.harga, makanan.kategori_id
-        ]
+        makanan_dict[makanan.id_makanan] = {
+            'nama' : makanan.nama_makanan ,
+            'harga' : makanan.harga,
+             'kategori' : makanan.kategori_id
+        }
 
     json_return = makanan_dict
-
+    for data in makanan_dict:
+        print(data)
     json_return = jsonify(json_return)
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
     return json_return
