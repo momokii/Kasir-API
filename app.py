@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
 
+import requests
+
 app = Flask(__name__)
 app.config['SECRET-KEY'] = 'bismillah'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///kasir_api.db"
@@ -71,23 +73,34 @@ def get_all_kategori():
     return json_return
 
 
-@app.route('/tambah_kategori')
+@app.route('/tambah_kategori', methods = ['POST'])
 def tambah_kategori():
     try:
-        nama_kategori = request.args.get('nama_kategori')
-        kategori = Kategori(
-            nama_kategori = nama_kategori
-        )
-        db.session.add(kategori)
-        db.session.commit()
+        check_req = request.headers.get('Content-Type')
+        if check_req == 'application/json':
+            try:
+                nama_kategori = request.get_json()['nama_kategori']
+                kategori = Kategori(
+                    nama_kategori = nama_kategori
+                )
+                db.session.add(kategori)
+                db.session.commit()
 
-        json_return = {
-            "Berhasil" : f"Berhasil tambah kategori : {nama_kategori}"
-        }
+                json_return = {
+                    "Berhasil" : f"Berhasil tambah kategori : {nama_kategori}"
+                }
 
+            except:
+                json_return = {
+                    "Gagal": f"Gagal tambah kategori : {nama_kategori}, kemungkinan kategori tersebut sudah ada"
+                }
+        else:
+            json_return = {
+                'Gagal' : 'gagal lakukan request'
+            }
     except:
         json_return = {
-            "Gagal": f"Gagal tambah kategori : {nama_kategori}, kemungkinan kategori tersebut sudah ada"
+            'Gagal' : 'gagal'
         }
 
     json_return = jsonify(json_return)
@@ -122,6 +135,7 @@ def hapus_kategori():
 
 @app.route('/edit_kategori')
 def edit_kategori():
+
     try:
         id = request.args.get('id')
         nama_baru = request.args.get('nama_ganti')
@@ -180,29 +194,41 @@ def get_all_makanan():
 
 
 
-@app.route('/tambah_makanan')
+@app.route('/tambah_makanan', methods = ['POST'])
 def tambah_makanan():
     try:
-        nama = request.args.get('nama_makanan')
-        harga = int(request.args.get('harga'))
-        kategori_id = request.args.get('id_kategori')
+        req_check = request.headers.get('Content-Type')
+        if req_check == "application/json":
+            try:
+                data = request.get_json()
+                nama = data['nama_makanan']
+                harga = data['harga']
+                kategori_id = data['id_kategori']
 
-        makanan_baru = Makanan(
-            nama_makanan = nama,
-            harga = harga,
-            kategori_id = kategori_id
-        )
+                makanan_baru = Makanan(
+                    nama_makanan = nama,
+                    harga = harga,
+                    kategori_id = kategori_id
+                )
 
-        db.session.add(makanan_baru)
-        db.session.commit()
+                db.session.add(makanan_baru)
+                db.session.commit()
 
-        json_return = {
-            'Berhasil' : f'Berhasil tambahkan makanan : {nama}'
-        }
+                json_return = {
+                    'Berhasil' : f'Berhasil tambahkan makanan : {nama}'
+                }
 
+            except:
+                json_return = {
+                    'Gagal' : f'Gagal tambahkan makanan : {nama}, kemungkinan nama tersebut sudah ada'
+                }
+        else:
+            json_return = {
+                'Gagal' : "Request Gagal"
+            }
     except:
         json_return = {
-            'Gagal' : f'Gagal tambahkan makanan : {nama}, kemungkinan nama tersebut sudah ada'
+            'Gagal' : 'Gagal'
         }
 
     json_return = jsonify(json_return)
