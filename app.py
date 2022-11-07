@@ -56,11 +56,7 @@ def get_all_kategori():
         for kategori in all_kategori:
             kategori_dict[kategori.id_kategori] = kategori.nama_kategori
 
-        json_return = {
-            "Berhasil" : {
-                "Kategori" : kategori_dict
-            }
-        }
+        json_return = kategori_dict
     except:
         json_return = {
             "Gagal" : "Gagal Mengambil data seluruh Kategori"
@@ -167,11 +163,7 @@ def get_all_makanan():
             makanan.nama_makanan , makanan.harga, makanan.kategori_id
         ]
 
-    json_return = {
-        "Berhasil" : {
-            "Makanan" : makanan_dict
-        }
-    }
+    json_return = makanan_dict
 
     json_return = jsonify(json_return)
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
