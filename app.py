@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
 
-import requests
 
 app = Flask(__name__)
 app.config['SECRET-KEY'] = 'bismillah'
