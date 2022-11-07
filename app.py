@@ -4,12 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
 
+from flask_cors import CORS
+
 
 app = Flask(__name__)
 app.config['SECRET-KEY'] = 'bismillah'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///kasir_api.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATION"] = False
 db = SQLAlchemy(app)
+CORS(app)
 
 
 
@@ -56,7 +59,7 @@ def get_all_kategori():
         kategori_dict = []
         for kategori in all_kategori:
             data = {
-                'id' : kategori.nama_kategori,
+                'id' : kategori.id_kategori,
                 'nama_kategori' : kategori.nama_kategori
             }
             kategori_dict.append(data)
@@ -196,6 +199,7 @@ def get_all_makanan():
 @app.route('/tambah_makanan', methods = ['POST'])
 def tambah_makanan():
     try:
+        request.access_control_request_headers
         req_check = request.headers.get('Content-Type')
         if req_check == "application/json":
             try:
