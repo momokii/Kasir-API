@@ -55,10 +55,8 @@ def get_all_kategori():
         kategori_dict = []
         for kategori in all_kategori:
             data = {
-
                 'id' : kategori.nama_kategori,
                 'nama_kategori' : kategori.nama_kategori
-
             }
             kategori_dict.append(data)
 
