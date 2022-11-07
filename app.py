@@ -157,18 +157,20 @@ def edit_kategori():
 def get_all_makanan():
 
     all_makanan = Makanan.query.all()
-    makanan_dict = {}
+    makanan_dict = []
     for makanan in all_makanan:
-        makanan_dict[makanan.id_makanan] = {
+        data = {
+            'id' : makanan.id_makanan,
             'nama' : makanan.nama_makanan ,
             'harga' : makanan.harga,
              'kategori' : makanan.kategori_id
         }
+        makanan_dict.append(data)
 
     json_return = makanan_dict
-    for data in makanan_dict:
-        print(data)
+
     json_return = jsonify(json_return)
+
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
     return json_return
 
