@@ -66,6 +66,8 @@ def get_all_kategori():
             "Gagal" : "Gagal Mengambil data seluruh Kategori"
         }
 
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
     return json_return
 
 
@@ -88,7 +90,9 @@ def tambah_kategori():
             "Gagal": f"Gagal tambah kategori : {nama_kategori}, kemungkinan kategori tersebut sudah ada"
         }
 
-    return jsonify(json_return)
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
 
 
 @app.route('/hapus_kategori')
@@ -111,6 +115,8 @@ def hapus_kategori():
             "Gagal" : "Penghapusan kategori gagal!"
         }
     finally:
+        json_return = jsonify(json_return)
+        json_return.headers.add_header('Access-Control-Allow-Origin', '*')
         return json_return
 
 
@@ -144,6 +150,8 @@ def edit_kategori():
             "Gagal" : "Edit Kategori Gagal"
         }
     finally:
+        json_return = jsonify(json_return)
+        json_return.headers.add_header('Access-Control-Allow-Origin', '*')
         return json_return
 
 
@@ -165,6 +173,8 @@ def get_all_makanan():
         }
     }
 
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
     return json_return
 
 
@@ -193,6 +203,9 @@ def tambah_makanan():
         json_return = {
             'Gagal' : f'Gagal tambahkan makanan : {nama}, kemungkinan nama tersebut sudah ada'
         }
+
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
     return  json_return
 
 
@@ -225,6 +238,8 @@ def edit_makanan():
             "Gagal" : "Edit Gagal"
         }
     finally:
+        json_return = jsonify(json_return)
+        json_return.headers.add_header('Access-Control-Allow-Origin', '*')
         return json_return
 
 
@@ -249,6 +264,8 @@ def hapus_makanan():
             "Gagal" : "Gagal melakukan Hapus Makanan"
         }
     finally:
+        json_return = jsonify(json_return)
+        json_return.headers.add_header('Access-Control-Allow-Origin', '*')
         return json_return
 
 
