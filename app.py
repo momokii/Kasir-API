@@ -52,9 +52,15 @@ def awal():
 def get_all_kategori():
     try:
         all_kategori = Kategori.query.all()
-        kategori_dict = {}
+        kategori_dict = []
         for kategori in all_kategori:
-            kategori_dict[kategori.id_kategori] = kategori.nama_kategori
+            data = {
+
+                'id' : kategori.nama_kategori,
+                'nama_kategori' : kategori.nama_kategori
+
+            }
+            kategori_dict.append(data)
 
         json_return = kategori_dict
     except:
