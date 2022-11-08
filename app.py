@@ -257,38 +257,39 @@ def tambah_makanan():
     return  json_return
 
 
-@app.route('/edit_makanan')
+@app.route('/edit_makanan', methods = ['POST'])
 def edit_makanan():
-    try:
-        id_makanan = request.args.get('id')
-        nama_baru = request.args.get('nama_baru')
-        harga_baru = request.args.get('harga_baru')
-        kategori_id = request.args.get('id_kategori_baru')
 
-        makanan_edit = Makanan.query.get(id_makanan)
-        nama_lama = makanan_edit.nama_makanan
-        if makanan_edit:
-            try:
-                makanan_edit.nama_makanan = nama_baru
-                makanan_edit.harga = harga_baru
-                makanan_edit.kategori_id = kategori_id
+    request.access_control_request_headers
+    req_check = request.headers.get('Content-Type')
+    if req_check == 'application/json':
+        data = request.get_json()
+        print(data)
+        id_makanan = data['id_makanan']
+        nama_baru = data['nama_baru']
+        harga_baru = data['harga_baru']
+        kategori_id = data['kategori_id']
 
-                db.session.commit()
-                json_return = {
-                    "Berhasil" : f"Berhasil Ubah Info Makanan"
-                }
-            except:
-                json_return = {
-                    'Gagal' : f"Gagal ubah nama dari {nama_lama} menjadi {nama_baru} tidak bisa, nama {nama_baru} sudah ada pada sistem"
-                }
-    except:
-        json_return = {
-            "Gagal" : "Edit Gagal"
-        }
-    finally:
-        json_return = jsonify(json_return)
-        json_return.headers.add_header('Access-Control-Allow-Origin', '*')
-        return json_return
+    makanan_edit = Makanan.query.get(id_makanan)
+    nama_lama = makanan_edit.nama_makanan
+    if makanan_edit:
+        try:
+            makanan_edit.nama_makanan = nama_baru
+            makanan_edit.harga = harga_baru
+            makanan_edit.kategori_id = kategori_id
+
+            db.session.commit()
+            json_return = {
+                "Berhasil" : f"Berhasil Ubah Info Makanan"
+            }
+        except:
+            json_return = {
+                'Gagal' : f"Gagal ubah nama dari {nama_lama} menjadi {nama_baru} tidak bisa, nama {nama_baru} sudah ada pada sistem"
+            }
+
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
 
 
 @app.route('/hapus_makanan')
