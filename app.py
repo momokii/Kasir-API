@@ -195,6 +195,24 @@ def get_all_makanan():
     return json_return
 
 
+@app.route('/get_makanan')
+def get_makanan():
+    id = request.args.get('id')
+    makanan = Makanan.query.filter_by(id_makanan = id).first()
+    json_return = {
+        'id': makanan.id_makanan,
+        'nama': makanan.nama_makanan,
+        'harga': makanan.harga,
+        'kategori': makanan.kategori_id
+    }
+
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
+
+
+
+
 
 @app.route('/tambah_makanan', methods = ['POST'])
 def tambah_makanan():
