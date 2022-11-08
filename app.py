@@ -54,56 +54,57 @@ def awal():
 
 @app.route('/get_all_kategori')
 def get_all_kategori():
-    try:
-        all_kategori = Kategori.query.all()
-        kategori_dict = []
-        for kategori in all_kategori:
-            data = {
-                'id' : kategori.id_kategori,
-                'nama_kategori' : kategori.nama_kategori
-            }
-            kategori_dict.append(data)
 
-        json_return = kategori_dict
-    except:
-        json_return = {
-            "Gagal" : "Gagal Mengambil data seluruh Kategori"
+    all_kategori = Kategori.query.all()
+    kategori_dict = []
+    for kategori in all_kategori:
+        data = {
+            'id' : kategori.id_kategori,
+            'nama_kategori' : kategori.nama_kategori
         }
+        kategori_dict.append(data)
+
+    json_return = kategori_dict
 
     json_return = jsonify(json_return)
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
     return json_return
 
+@app.route('/get_kategori')
+def get_kategori():
+    id = request.args.get('id')
+    kategori = Kategori.query.filter_by(id_kategori = id).first()
+    return_json = {
+        "id" : kategori.id_kategori,
+        'nama_kategori' : kategori.nama_kategori
+    }
+
+    return_json = jsonify(return_json)
+    return_json.headers.add_header('Access-Control-Allow-Origin', '*')
+    return return_json
+
 
 @app.route('/tambah_kategori', methods = ['POST'])
 def tambah_kategori():
-    try:
-        check_req = request.headers.get('Content-Type')
-        if check_req == 'application/json':
-            try:
-                nama_kategori = request.get_json()['nama_kategori']
-                kategori = Kategori(
-                    nama_kategori = nama_kategori
-                )
-                db.session.add(kategori)
-                db.session.commit()
 
-                json_return = {
-                    "Berhasil" : f"Berhasil tambah kategori : {nama_kategori}"
-                }
+    check_req = request.headers.get('Content-Type')
+    if check_req == 'application/json':
+        try:
+            nama_kategori = request.get_json()['nama_kategori']
+            kategori = Kategori(
+                nama_kategori = nama_kategori
+            )
+            db.session.add(kategori)
+            db.session.commit()
 
-            except:
-                json_return = {
-                    "Gagal": f"Gagal tambah kategori : {nama_kategori}, kemungkinan kategori tersebut sudah ada"
-                }
-        else:
             json_return = {
-                'Gagal' : 'gagal lakukan request'
+                "Berhasil" : f"Berhasil tambah kategori : {nama_kategori}"
             }
-    except:
-        json_return = {
-            'Gagal' : 'gagal'
-        }
+
+        except:
+            json_return = {
+                "Gagal": f"Gagal tambah kategori : {nama_kategori}, kemungkinan kategori tersebut sudah ada"
+            }
 
     json_return = jsonify(json_return)
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
@@ -112,63 +113,49 @@ def tambah_kategori():
 
 @app.route('/hapus_kategori')
 def hapus_kategori():
-    try:
-        id = request.args.get('id')
-        kategori_hapus = Kategori.query.get(id)
-        if kategori_hapus:
-            db.session.delete(kategori_hapus)
-            db.session.commit()
-            json_return = {
-                "Berhasil" : f"Berhasil hapus kategori : { kategori_hapus.nama_kategori }"
-            }
-        else:
-            json_return = {
-                "Gagal" : "ID dimasukan tidak ditemukan!"
-            }
-    except:
+    id = request.args.get('id')
+    kategori_hapus = Kategori.query.get(id)
+    if kategori_hapus:
+        db.session.delete(kategori_hapus)
+        db.session.commit()
         json_return = {
-            "Gagal" : "Penghapusan kategori gagal!"
+            "Berhasil" : f"Berhasil hapus kategori : { kategori_hapus.nama_kategori }"
         }
-    finally:
-        json_return = jsonify(json_return)
-        json_return.headers.add_header('Access-Control-Allow-Origin', '*')
-        return json_return
+
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
 
 
-@app.route('/edit_kategori')
+@app.route('/edit_kategori', methods = ['POST'])
 def edit_kategori():
 
-    try:
-        id = request.args.get('id')
-        nama_baru = request.args.get('nama_ganti')
+    request.access_control_request_headers
+    check = request.headers.get('Content-Type')
+    if check == 'application/json':
+        data_edit = request.get_json()
+        id = data_edit['id']
+        nama_baru = data_edit['nama']
 
         kategori_edit = Kategori.query.get(id)
         nama_lama = kategori_edit.nama_kategori
 
-        if kategori_edit:
-            try:
-                kategori_edit.nama_kategori = nama_baru
-                db.session.commit()
+        kategori_edit.nama_kategori = nama_baru
+        db.session.commit()
 
-                json_return = {
-                    "Berhasil" : f"Berhasil ubah nama_kategori dari : {nama_lama} diubah jadi : {nama_baru}"
-                }
-            except:
-                json_return = {
-                    "Gagal" : f"Gagal ubah kategori dari {nama_lama} menjadi {nama_baru}, nama tersebut kemungkinan sudah ada"
-                }
-        else:
-            json_return = {
-                "Gagal" : "ID dicari tidak ditemukan"
-            }
-    except:
         json_return = {
-            "Gagal" : "Edit Kategori Gagal"
+            "Berhasil" : f"Berhasil ubah nama_kategori dari : {nama_lama} diubah jadi : {nama_baru}"
         }
-    finally:
-        json_return = jsonify(json_return)
-        json_return.headers.add_header('Access-Control-Allow-Origin', '*')
-        return json_return
+
+
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
+
+
+
+
+
 
 
 ##### ----------------------- MAKANAN ----------------------- #####
@@ -216,41 +203,28 @@ def get_makanan():
 
 @app.route('/tambah_makanan', methods = ['POST'])
 def tambah_makanan():
-    try:
-        request.access_control_request_headers
-        req_check = request.headers.get('Content-Type')
-        if req_check == "application/json":
-            try:
-                data = request.get_json()
-                nama = data['nama_makanan']
-                harga = data['harga']
-                kategori_id = data['id_kategori']
 
-                makanan_baru = Makanan(
-                    nama_makanan = nama,
-                    harga = harga,
-                    kategori_id = kategori_id
-                )
+    request.access_control_request_headers
+    req_check = request.headers.get('Content-Type')
+    if req_check == "application/json":
+        data = request.get_json()
+        nama = data['nama_makanan']
+        harga = data['harga']
+        kategori_id = data['id_kategori']
 
-                db.session.add(makanan_baru)
-                db.session.commit()
+        makanan_baru = Makanan(
+            nama_makanan = nama,
+            harga = harga,
+            kategori_id = kategori_id
+        )
 
-                json_return = {
-                    'Berhasil' : f'Berhasil tambahkan makanan : {nama}'
-                }
+        db.session.add(makanan_baru)
+        db.session.commit()
 
-            except:
-                json_return = {
-                    'Gagal' : f'Gagal tambahkan makanan : {nama}, kemungkinan nama tersebut sudah ada'
-                }
-        else:
-            json_return = {
-                'Gagal' : "Request Gagal"
-            }
-    except:
         json_return = {
-            'Gagal' : 'Gagal'
+            'Berhasil' : f'Berhasil tambahkan makanan : {nama}'
         }
+
 
     json_return = jsonify(json_return)
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
@@ -264,7 +238,6 @@ def edit_makanan():
     req_check = request.headers.get('Content-Type')
     if req_check == 'application/json':
         data = request.get_json()
-        print(data)
         id_makanan = data['id_makanan']
         nama_baru = data['nama_baru']
         harga_baru = data['harga_baru']
@@ -272,20 +245,15 @@ def edit_makanan():
 
     makanan_edit = Makanan.query.get(id_makanan)
     nama_lama = makanan_edit.nama_makanan
-    if makanan_edit:
-        try:
-            makanan_edit.nama_makanan = nama_baru
-            makanan_edit.harga = harga_baru
-            makanan_edit.kategori_id = kategori_id
 
-            db.session.commit()
-            json_return = {
-                "Berhasil" : f"Berhasil Ubah Info Makanan"
-            }
-        except:
-            json_return = {
-                'Gagal' : f"Gagal ubah nama dari {nama_lama} menjadi {nama_baru} tidak bisa, nama {nama_baru} sudah ada pada sistem"
-            }
+    makanan_edit.nama_makanan = nama_baru
+    makanan_edit.harga = harga_baru
+    makanan_edit.kategori_id = kategori_id
+
+    db.session.commit()
+    json_return = {
+        "Berhasil" : f"Berhasil Ubah Info Makanan"
+    }
 
     json_return = jsonify(json_return)
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
@@ -294,28 +262,19 @@ def edit_makanan():
 
 @app.route('/hapus_makanan')
 def hapus_makanan():
-    try:
-        id = request.args.get('id')
-        makanan_hapus = Makanan.query.get(id)
-        if makanan_hapus:
-            db.session.delete(makanan_hapus)
-            db.session.commit()
 
-            json_return = {
-                "Berhasil" : f"Berhasil hapus makanan : {makanan_hapus.nama_makanan}"
-            }
-        else:
-            json_return = {
-                "Gagal" : f"Id dicari tidak ada"
-            }
-    except:
-        json_return = {
-            "Gagal" : "Gagal melakukan Hapus Makanan"
-        }
-    finally:
-        json_return = jsonify(json_return)
-        json_return.headers.add_header('Access-Control-Allow-Origin', '*')
-        return json_return
+    id = request.args.get('id')
+    makanan_hapus = Makanan.query.get(id)
+    db.session.delete(makanan_hapus)
+    db.session.commit()
+
+    json_return = {
+        "Berhasil" : f"Berhasil hapus makanan : {makanan_hapus.nama_makanan}"
+    }
+
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
 
 
 
