@@ -87,14 +87,18 @@ def get_user():
         if user:
             if user.check_password(password):
                 akun = {
-                    'username' : username
+                    'data' : {
+                        'username': username,
+                        'status_login': 'berhasil',
+                        'token' : user.password_hash
+                    }
                 }
                 json_return = jsonify(akun)
 
             else:
-                json_return = jsonify(Gagal = 'username/pass salah')
+                json_return = jsonify(data = {'status_login': 'gagal'})
         else:
-            json_return = jsonify(Gagal='username/pass salah')
+            json_return = jsonify(data = {'status_login': 'gagal'})
 
 
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
