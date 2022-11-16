@@ -3,6 +3,7 @@ import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from flask_cors import CORS
 
@@ -35,6 +36,26 @@ class Makanan(db.Model):
     kategori_id = db.Column(db.Integer)
 
 
+class User(db.Model):
+    __tablename__ = 'akun'
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(50), nullable =  False, unique = True)
+    password_hash = db.Column(db.String(500), nullable = False)
+
+    @property
+    def password(self):
+        return self.password
+    @password.setter
+    def password(self, password_plain):
+        self.password_hash = generate_password_hash(password_plain, salt_length=8)
+
+    def check_password(self, password):
+        if check_password_hash(self.password_hash, password):
+            return True
+        else:
+            return False
+
+
 db.create_all()
 
 
@@ -48,6 +69,81 @@ db.create_all()
 @app.route('/')
 def awal():
     return "REST API Kasir"
+
+
+
+
+##### ----------------------- USER ----------------------- #####
+@app.route('/get_user', methods = ['POST', 'GET'])
+def get_user():
+    request.access_control_request_headers
+    check_req = request.headers.get('Content-Type')
+    if check_req == 'application/json':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+
+        user = User.query.filter_by(username = username).first()
+        if user:
+            if user.check_password(password):
+                akun = {
+                    'username' : username
+                }
+                json_return = jsonify(akun)
+
+            else:
+                json_return = jsonify(Gagal = 'username/pass salah')
+        else:
+            json_return = jsonify(Gagal='username/pass salah')
+
+
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
+
+@app.route('/tambah_user', methods = ['POST', 'GET'])
+def tambah_user():
+    request.access_control_request_headers
+    check_req = request.headers.get('Content-Type')
+    if check_req == 'application/json':
+        data = request.get_json()
+        tambah_akun = User(
+            username = data['username'],
+            password = data['password']
+        )
+        db.session.add(tambah_akun)
+        db.session.commit()
+
+        json_return = jsonify(Berhasil = f'Berhasil tambahkan akun username : {data["username"]}')
+
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
+
+
+@app.route('/hapus_user', methods = ['POST', 'GET'])
+def hapus_user():
+    request.access_control_request_headers
+    check_req = request.headers.get('Content-Type')
+    if check_req == 'application/json':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+
+        user = User.query.filter_by(username=username).first()
+        if user:
+            if user.check_password(password):
+                db.session.delete(user)
+                db.session.commit()
+                json_return = jsonify(Berhasil = f"Berhasil hapus akun dengan username {username}")
+
+            else:
+                json_return = jsonify(Gagal='username/pass salah, hapus gagal')
+        else:
+            json_return = jsonify(Gagal='username/pass salah, hapus gagal')
+
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
+
+
 
 
 ##### ----------------------- KATEGORI ----------------------- #####
