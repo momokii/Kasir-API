@@ -98,10 +98,9 @@ def get_user():
         else:
             json_return = jsonify(status_login = 'gagal')
 
-
-
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
     return json_return
+
 
 @app.route('/tambah_user', methods = ['POST', 'GET'])
 def tambah_user():
@@ -169,6 +168,7 @@ def get_all_kategori():
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
     return json_return
 
+
 @app.route('/get_kategori')
 def get_kategori():
     id = request.args.get('id')
@@ -186,6 +186,7 @@ def get_kategori():
 @app.route('/tambah_kategori', methods = ['POST'])
 def tambah_kategori():
 
+    request.access_control_request_headers
     check_req = request.headers.get('Content-Type')
     if check_req == 'application/json':
         try:
@@ -204,22 +205,6 @@ def tambah_kategori():
             json_return = {
                 "Gagal": f"Gagal tambah kategori : {nama_kategori}, kemungkinan kategori tersebut sudah ada"
             }
-
-    json_return = jsonify(json_return)
-    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
-    return json_return
-
-
-@app.route('/hapus_kategori')
-def hapus_kategori():
-    id = request.args.get('id')
-    kategori_hapus = Kategori.query.get(id)
-    if kategori_hapus:
-        db.session.delete(kategori_hapus)
-        db.session.commit()
-        json_return = {
-            "Berhasil" : f"Berhasil hapus kategori : { kategori_hapus.nama_kategori }"
-        }
 
     json_return = jsonify(json_return)
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
@@ -246,6 +231,23 @@ def edit_kategori():
             "Berhasil" : f"Berhasil ubah nama_kategori dari : {nama_lama} diubah jadi : {nama_baru}"
         }
 
+
+    json_return = jsonify(json_return)
+    json_return.headers.add_header('Access-Control-Allow-Origin', '*')
+    return json_return
+
+
+
+@app.route('/hapus_kategori')
+def hapus_kategori():
+    id = request.args.get('id')
+    kategori_hapus = Kategori.query.get(id)
+    if kategori_hapus:
+        db.session.delete(kategori_hapus)
+        db.session.commit()
+        json_return = {
+            "Berhasil" : f"Berhasil hapus kategori : { kategori_hapus.nama_kategori }"
+        }
 
     json_return = jsonify(json_return)
     json_return.headers.add_header('Access-Control-Allow-Origin', '*')
